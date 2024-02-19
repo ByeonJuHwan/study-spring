@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-signup {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            margin: auto;
+        }
+
+        .error {
+            color: #FF0000; /* 빨간색으로 에러 메시지 표시 */
+        }
+    </style>
+</head>
+<body>
+<div class="container form-container">
+    <div class="form-signup">
+        <h2 class="text-center">로그인</h2>
+        <!-- th:object를 사용하여 서버로부터 받은 LoginDto 객체를 폼에 바인딩 -->
+        <form th:action="@{/login}" th:object="${login}" method="post" class="mt-4">
+            <div class="form-group">
+                <label for="userId">사용자 ID:</label>
+                <input type="text" class="form-control" id="userId" th:field="*{userId}" placeholder="사용자 ID를 입력해 주세요" required>
+                <!-- 에러 메시지 표시 -->
+                <div class="error" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호:</label>
+                <input type="password" class="form-control" id="password" th:field="*{password}" placeholder="비밀번호를 입력해 주세요" required>
+                <!-- 에러 메시지 표시 -->
+                <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">로그인</button>
+            <a href="/" class="btn btn-secondary btn-block mt-2">홈</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>
