@@ -20,6 +20,16 @@ public class LoginController {
         return "login";
     }
 
+    /**
+     * fixme
+     * @RestControllerAdvice 를 통해서 Global Exception Handling 방식을 구현하는것을 추천드립니다.
+     * 코드가 더 깔끔해지고 전체적으로 API 예외사항 통제가 더 수월해집니다.
+     * 그리고 본인만의 예외를 정의해서 사용하시면 됩니다. RuntimeException 을 상속해서 정의해서 사용하면 됩니다.
+     * 200 OK, 400 에러, 500 에러 와 401은 인증, 403은 인가 에러로 처리해주시면 됩니다. (이부분 위 내용 해보시고 다시 말씀드릴께요)
+     * @param dto
+     * @param bindingResult
+     * @return
+     */
     @PostMapping("/login")
     public String login(@Validated @ModelAttribute("login") LoginDto dto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
