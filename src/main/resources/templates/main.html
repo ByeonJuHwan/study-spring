@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>홈페이지</title>
@@ -48,9 +48,25 @@
 <div class="container form-home d-flex align-items-center justify-content-center" style="min-height: 100vh;">
     <div class="text-center">
         <h2>어서오세요</h2>
-        <p>열심히 해보겠습니다!</p>
-        <a th:href="@{/login}" class="btn btn-lg btn-primary btn-block" role="button">로그인</a>
-        <a th:href="@{/join}" class="btn btn-lg btn-secondary btn-block" role="button">회원가입</a>
+        <!-- 로그인한 사용자의 ID 표시 -->
+
+        <th:block sec:authorize="isAuthenticated()">
+            <p sec:authorize="isAuthenticated()">열심히 해보겠습니다!</p>
+            <span sec:authentication="name"></span><span> 님 어서오세요!</span>
+        </th:block>
+
+        <p sec:authorize="isAnonymous()">열심히 해보겠습니다!</p>
+
+        <!-- 로그인 상태에 따른 버튼 표시 -->
+        <th:block sec:authorize="isAuthenticated()">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-lg btn-danger btn-block">로그아웃</button>
+            </form>
+        </th:block>
+        <th:block sec:authorize="isAnonymous()">
+            <a th:href="@{/login}" class="btn btn-lg btn-primary btn-block" role="button">로그인</a>
+            <a th:href="@{/join}" class="btn btn-lg btn-secondary btn-block" role="button">회원가입</a>
+        </th:block>
     </div>
 </div>
 
