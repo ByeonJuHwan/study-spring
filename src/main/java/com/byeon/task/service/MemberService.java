@@ -5,6 +5,7 @@ import com.byeon.task.dto.MemberJoinDto;
 import com.byeon.task.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,8 +14,10 @@ import org.springframework.stereotype.Service;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void join(MemberJoinDto memberJoinDto) {
+        memberJoinDto.setPassword(passwordEncoder.encode(memberJoinDto.getPassword())); // password 인코딩
         Member savedMember = memberRepository.save(Member.toEntity(memberJoinDto));
         log.info("savedMember = {}", savedMember);
     }
