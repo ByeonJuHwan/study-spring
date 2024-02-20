@@ -37,6 +37,9 @@ dependencies {
 	// spring security 추가
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.security:spring-security-test'
+	// 타임리프에서 spring security 사용하기 위해서 추가
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+
 }
 
 tasks.named('test') {
