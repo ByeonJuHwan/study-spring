@@ -20,6 +20,9 @@ public class LoginController {
     @GetMapping("/login")
     public String loginPage(@RequestParam(required = false) String error, Model model) {
         model.addAttribute("login", new LoginDto());
+
+        // todo error 는 에러코드의 의미로 사용하는게 좋을 것 같습니다.
+        // todo 실제 리턴되는 에러 메시지는 message.properties 방식으로 처리를 요청드립니다.
         model.addAttribute("error", error); // todo 에러 메시지를 화면에 보여주기.
         return "login";
     }
