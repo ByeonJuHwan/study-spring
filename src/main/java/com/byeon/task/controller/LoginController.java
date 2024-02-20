@@ -1,6 +1,7 @@
 package com.byeon.task.controller;
 
 import com.byeon.task.dto.LoginDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 public class LoginController {
 
     @GetMapping("/login")
@@ -30,14 +32,15 @@ public class LoginController {
      * @param bindingResult
      * @return
      */
-    @PostMapping("/login")
-    public String login(@Validated @ModelAttribute("login") LoginDto dto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            log.error("error = {}", bindingResult.getAllErrors());
-            return "/login";
-        }
-
-
-        return "redirect:/";
-    }
+//    @PostMapping("/login")
+//    public String login(@Validated @ModelAttribute("login") LoginDto dto, BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()) {
+//            log.error("error = {}", bindingResult.getAllErrors());
+//            return "/login";
+//        }
+//
+//
+//
+//        return "redirect:/";
+//    }
 }
