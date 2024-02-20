@@ -36,8 +36,8 @@ public class SecurityConfig {
                         .loginPage("/login") // 로그인 페이지 URL 설정
                         .loginProcessingUrl("/login") // 로그인 폼 제출 URL
                         .defaultSuccessUrl("/", true) // 로그인 성공 시 리다이렉트할 URL
-                        .failureUrl("/login") // 로그인 실패 시 리다이렉트할 URL
-                        .failureHandler((request, response, exception) -> log.error(exception.getMessage()))
+                        .failureUrl("/login?error=error!!") // 로그인 실패 시 리다이렉트할 URL
+//                        .failureHandler((request, response, exception) -> log.error(exception.getMessage()))
                         .permitAll()
                 )
                 .logout(logout -> logout
