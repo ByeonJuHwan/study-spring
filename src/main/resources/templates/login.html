@@ -28,6 +28,7 @@
 <div class="container form-container">
     <div class="form-signup">
         <h2 class="text-center">로그인</h2>
+        <p class="error text-center" th:if="${error != null}" th:text="#{login.failure}"></p>
         <!-- th:object를 사용하여 서버로부터 받은 LoginDto 객체를 폼에 바인딩 -->
         <form th:action="@{/login}" th:object="${login}" method="post" class="mt-4">
             <div class="form-group">
