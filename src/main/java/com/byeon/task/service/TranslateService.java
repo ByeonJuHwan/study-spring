@@ -28,9 +28,6 @@ public class TranslateService {
 
     public ResponseEntity<String> callApiResult(TranslateDto dto) {
 
-        log.info("api-key = {}", apiKey);
-        log.info("url= {}", url);
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
