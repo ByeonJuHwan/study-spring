@@ -33,11 +33,13 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	// 스프링 세션 JDBC & 스프링 부트 스타터 JDBC
+	implementation 'org.springframework.session:spring-session-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
-	// spring security 추가
+	// spring security 추가 & 타임리프에서 spring security 사용하기 위해서 추가
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.security:spring-security-test'
-	// 타임리프에서 spring security 사용하기 위해서 추가
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
 
 }
