@@ -58,13 +58,10 @@
     })
     function translateText() {
         const input = document.getElementById('userInput').value;
-        // 여기에 번역 API 호출 코드를 추가하세요. 아래는 예시 메시지입니다.
-        const translatedText = 'Translated text will go here';
-
 
         const data = {
             text : input,
-            target_lang : 'EN'
+            target_lang : 'JA'
         }
 
         console.log("param data --> ", JSON.stringify(data));
