@@ -64,13 +64,17 @@
 
         const data = {
             text : input,
-            target_lang : 'JA'
+            target_lang : 'EN'
         }
 
+        console.log("param data --> ", JSON.stringify(data));
+
         $.ajax({
-            url : 'https://localhost:8080/translate',
+            url : 'http://localhost:8080/translate',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
             type : 'POST',
-            data : data ,
+            data : JSON.stringify(data) ,
             success: function (response) {
                 // alert(response);
                 const translatedText = response.translations[0].text;
