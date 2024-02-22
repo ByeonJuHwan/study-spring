@@ -29,6 +29,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+//                        .requestMatchers("/translate").authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin(formLogin -> formLogin
