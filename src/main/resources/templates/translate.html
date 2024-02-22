@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실시간 번역 채팅창</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .full-height {
+            height: 100vh;
+        }
+        .user-message{
+            text-align: right;
+        }
+        .translated-message{
+            text-align: left;
+        }
+        .chat-container {
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            height: 500px;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 600px; /* 채팅창의 최대 너비 */
+        }
+        .form-container {
+            width: 100%;
+            max-width: 600px; /* 입력 폼과 버튼의 최대 너비 */
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex justify-content-center align-items-center full-height">
+    <div class="text-center">
+        <h2>실시간 번역 채팅창</h2>
+        <div class="chat-container" id="chatContainer">
+            <!-- 채팅 메시지가 여기에 표시됩니다 -->
+        </div>
+        <div class="form-container">
+            <div class="form-group">
+                <input type="text" id="userInput" class="form-control" placeholder="번역할 내용을 입력하세요...">
+            </div>
+            <button class="btn btn-primary btn-block" onclick="translateText()">번역하기</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.getElementById('userInput').addEventListener('keypress',function (event){
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            translateText();
+        }
+    })
+    function translateText() {
+        const input = document.getElementById('userInput').value;
+        // 여기에 번역 API 호출 코드를 추가하세요. 아래는 예시 메시지입니다.
+        const translatedText = 'Translated text will go here';
+
+
+        const data = {
+            text : input,
+            target_lang : 'JA'
+        }
+
+        $.ajax({
+            url : 'https://localhost:8080/translate',
+            type : 'POST',
+            data : data ,
+            success: function (response) {
+                // alert(response);
+                const translatedText = response.translations[0].text;
+                // alert(translatedText);
+                // 사용자 메시지 추가
+                $("#chatContainer").append(`<div class="user-message"><p>${input}</p></div>`);
+                // 번역된 메시지 추가
+                $('#chatContainer').append(`<div class="translated-message"><p>${translatedText}</p></div>`);
+            },
+            error: function (error) {
+                // alert(error);
+            }
+        });
+
+        // 입력 필드 초기화
+        document.getElementById('userInput').value = '';
+    }
+</script>
+</body>
+</html>
