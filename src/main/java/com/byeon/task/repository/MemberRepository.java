@@ -1,7 +1,6 @@
 package com.byeon.task.repository;
 
-import com.byeon.task.domain.Member;
-import org.springframework.data.domain.Example;
+import com.byeon.task.domain.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

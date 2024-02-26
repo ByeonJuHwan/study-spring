@@ -1,4 +1,4 @@
-package com.byeon.task.domain;
+package com.byeon.task.domain.entity;
 
 import com.byeon.task.dto.MemberJoinDto;
 import jakarta.persistence.Entity;

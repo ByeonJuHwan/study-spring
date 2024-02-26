@@ -1,6 +1,6 @@
 package com.byeon.task.security;
 
-import com.byeon.task.domain.Member;
+import com.byeon.task.domain.entity.Member;
 import com.byeon.task.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

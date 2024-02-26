@@ -1,7 +1,8 @@
 package com.byeon.task.controller;
 
+import com.byeon.task.domain.result.RestResult;
 import com.byeon.task.dto.MemberJoinDto;
-import com.byeon.task.service.MemberService;
+import com.byeon.task.service.front.MemberFrontService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Slf4j
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberFrontService memberFrontService;
 
     @GetMapping("/join")
     public String join(Model model) {
@@ -33,7 +34,7 @@ public class MemberController {
         }
 
         log.info("memberJoinDto = {}", memberJoinDto);
-        memberService.join(memberJoinDto);
+        RestResult result = memberFrontService.join(memberJoinDto);
 
         return "redirect:/";
     }
