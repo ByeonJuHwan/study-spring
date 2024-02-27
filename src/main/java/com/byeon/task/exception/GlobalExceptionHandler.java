@@ -1,12 +1,25 @@
 package com.byeon.task.exception;
 
 
+import com.byeon.task.common.RestError;
+import com.byeon.task.service.TelegramService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
 
-@RestControllerAdvice
+import java.io.IOException;
+import java.net.URL;
+
+@Slf4j
+//@ControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
@@ -18,11 +31,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)   // 500
-    public Object exception(Exception e) {
-//        e.getMessage();
-        // todo Telegram 으로 전송 !!!!   429 에러...
-        // todo Rate Limit 을 이해하자.... 서버를 보호하는 방법이면서, 라이선스 정책과 관련 있다. (API 사용에 대해서 유료화 가능...)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public RestError exception(Exception ex) {
         return null;
     }
 }
