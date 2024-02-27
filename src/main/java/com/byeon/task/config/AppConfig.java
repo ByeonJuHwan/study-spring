@@ -31,12 +31,12 @@ public class AppConfig {
         return filterFilterRegistrationBean;
     }
 
-    @Bean
-    public FilterRegistrationBean<Filter> telegramFilter(ApplicationContext applicationContext) {
-        FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
-        filterFilterRegistrationBean.setFilter(new ExceptionCashingFilter(telegramService));
-        filterFilterRegistrationBean.setOrder(2);
-        filterFilterRegistrationBean.setUrlPatterns(Collections.singleton("/*"));
-        return filterFilterRegistrationBean;
-    }
+//    @Bean
+//    public FilterRegistrationBean<Filter> telegramFilter(ApplicationContext applicationContext) {
+//        FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
+//        filterFilterRegistrationBean.setFilter(new ExceptionCashingFilter(telegramService));
+//        filterFilterRegistrationBean.setOrder(2);
+//        filterFilterRegistrationBean.setUrlPatterns(Collections.singleton("/*"));
+//        return filterFilterRegistrationBean;
+//    }
 }
