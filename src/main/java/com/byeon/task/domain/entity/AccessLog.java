@@ -24,7 +24,10 @@ public class AccessLog {
     private String method;
     private String uri;
 
-    // todo String requestBody; 추가필요
-    // todo String responseBody; 추가필요
-    // todo int elapseTime; 추가필요 : 얼마나걸렸느냐
+    //  String requestBody; 추가필요
+    private String requestBody;
+    //  String responseBody; 추가필요
+    private String responseBody;
+    //  int elapseTime; 추가필요 : 얼마나걸렸느냐
+    private Integer elapseTime;
 }
