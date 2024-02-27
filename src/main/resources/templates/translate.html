@@ -36,7 +36,6 @@
     <div class="text-center">
         <h2>실시간 번역 채팅창</h2>
         <div class="chat-container" id="chatContainer">
-            <!-- 채팅 메시지가 여기에 표시됩니다 -->
         </div>
         <div class="form-container">
             <div class="form-group">
@@ -73,16 +72,13 @@
             type : 'POST',
             data : JSON.stringify(data) ,
             success: function (response) {
-                // alert(response);
                 const translatedText = response.translations[0].text;
-                // alert(translatedText);
                 // 사용자 메시지 추가
                 $("#chatContainer").append(`<div class="user-message"><p>${input}</p></div>`);
                 // 번역된 메시지 추가
                 $('#chatContainer').append(`<div class="translated-message"><p>${translatedText}</p></div>`);
             },
             error: function (error) {
-                // alert(error);
             }
         });
 
