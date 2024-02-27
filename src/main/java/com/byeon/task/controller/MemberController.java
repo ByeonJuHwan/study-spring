@@ -1,6 +1,5 @@
 package com.byeon.task.controller;
 
-import com.byeon.task.domain.result.RestResult;
 import com.byeon.task.dto.MemberJoinDto;
 import com.byeon.task.service.front.MemberFrontService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,7 @@ public class MemberController {
         }
 
         log.info("memberJoinDto = {}", memberJoinDto);
-        RestResult result = memberFrontService.join(memberJoinDto);
+        memberFrontService.join(memberJoinDto);
 
         return "redirect:/";
     }

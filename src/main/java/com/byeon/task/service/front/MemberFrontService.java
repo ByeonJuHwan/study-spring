@@ -2,7 +2,7 @@ package com.byeon.task.service.front;
 
 import com.byeon.task.domain.entity.Member;
 import com.byeon.task.domain.result.MemberResult;
-import com.byeon.task.domain.result.RestResult;
+import com.byeon.task.common.RestResult;
 import com.byeon.task.dto.MemberJoinDto;
 import com.byeon.task.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +34,8 @@ public class MemberFrontService {
         return new RestResult(data);
     }
 
-    public RestResult join(MemberJoinDto memberJoinDto) {
-        return null;
+    public void join(MemberJoinDto memberJoinDto) {
+        memberService.join(memberJoinDto);
     }
 }
 
