@@ -27,8 +27,8 @@ public class ExceptionCashingFilter implements Filter {
     @Value("${telegram.chatId}")
     private String chatId;
 
-    private final ApplicationContext applicationContext;
-
+    //    private final ApplicationContext applicationContext;
+    private final TelegramService telegramService;
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
 
@@ -41,7 +41,7 @@ public class ExceptionCashingFilter implements Filter {
 
         if (wrapperResponse.getStatus() >= 500) {
             log.info("responseContent = {}", responseContent);
-            TelegramService telegramService = applicationContext.getBean(TelegramService.class);
+//            TelegramService telegramService = applicationContext.getBean(TelegramService.class);
             telegramService.sendMessage();
         }
         wrapperResponse.copyBodyToResponse();

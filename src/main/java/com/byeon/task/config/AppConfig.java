@@ -30,6 +30,8 @@ public class AppConfig {
     }
 
     private final AccessLogRepository accessLogRepository;
+    private final TelegramService telegramService;
+
     @Bean
     public FilterRegistrationBean<Filter> accessLogFilter() {
         FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
@@ -42,7 +44,7 @@ public class AppConfig {
     @Bean
     public FilterRegistrationBean<Filter> telegramFilter(ApplicationContext applicationContext) {
         FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
-        filterFilterRegistrationBean.setFilter(new ExceptionCashingFilter(applicationContext));
+        filterFilterRegistrationBean.setFilter(new ExceptionCashingFilter(telegramService));
         filterFilterRegistrationBean.setOrder(2);
         filterFilterRegistrationBean.setUrlPatterns(Collections.singleton("/*"));
         return filterFilterRegistrationBean;
