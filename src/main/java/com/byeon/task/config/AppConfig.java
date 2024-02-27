@@ -19,16 +19,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class AppConfig {
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
-
     private final AccessLogRepository accessLogRepository;
     private final TelegramService telegramService;
 
