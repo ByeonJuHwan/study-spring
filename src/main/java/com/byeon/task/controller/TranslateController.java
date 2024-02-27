@@ -31,11 +31,9 @@ public class TranslateController {
         return "translate";
     }
 
-
-    //06a07804-585d-46aa-a46e-4c9ca5806c31:fx
     @PostMapping("/translate")
     @ResponseBody
-    public String translateResult(@RequestBody TranslateDto dto) throws JsonProcessingException {
+    public String translateResult(@RequestBody TranslateDto dto) {
         log.info("dto = {}", dto);
         // fixme 별도의 서비스를 만들어서 call 할수있도록 해주세요.
         // header 설정
