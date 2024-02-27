@@ -1,4 +1,4 @@
-package com.byeon.task.domain.result;
+package com.byeon.task.common;
 
 public class RestResult {
 
