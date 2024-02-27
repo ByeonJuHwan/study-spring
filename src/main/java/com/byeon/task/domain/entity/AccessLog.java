@@ -23,4 +23,8 @@ public class AccessLog {
     private LocalDateTime requestTime;
     private String method;
     private String uri;
+
+    // todo String requestBody; 추가필요
+    // todo String responseBody; 추가필요
+    // todo int elapseTime; 추가필요 : 얼마나걸렸느냐
 }

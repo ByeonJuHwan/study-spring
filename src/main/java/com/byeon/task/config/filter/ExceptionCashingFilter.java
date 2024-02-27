@@ -17,6 +17,9 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * fixme 네, 이야기주신것처럼 이 필터는 의미가 없을 것 같아요. GlobalExceptionHandler 여기에서 500 에러일때 텔레그렘 메시지 보내면 됩니다.
+ */
 @Slf4j
 @RequiredArgsConstructor
 public class ExceptionCashingFilter implements Filter {

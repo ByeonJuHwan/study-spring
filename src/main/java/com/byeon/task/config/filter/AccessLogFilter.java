@@ -4,8 +4,11 @@ import com.byeon.task.domain.entity.AccessLog;
 import com.byeon.task.repository.AccessLogRepository;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -26,6 +29,19 @@ public class AccessLogFilter implements Filter {
         String requestMethod = request.getMethod();
         String uri = request.getRequestURI();
 
+        ContentCachingRequestWrapper wrapperRequest = new ContentCachingRequestWrapper((HttpServletRequest) servletRequest);
+        ContentCachingResponseWrapper wrapperResponse = new ContentCachingResponseWrapper((HttpServletResponse) servletResponse);
+
+        // todo 시간측정, 시작
+
+        filterChain.doFilter(servletRequest, servletResponse);
+
+        // todo 시간측정, 종료, 걸린시간 측정
+
+        // todo 여기에서 wrapperRequest requestBody를 꺼내서 AccessLog 에 추가.
+        // todo 여기에서 wrapperResponse responseBody를 꺼내서 AccessLog 에 추가.
+        // todo 여기에서 위에서 측정한 시간을 AccessLog 에 추가.
+
         AccessLog accessLog = AccessLog.builder()
                 .ipAddress(ipAddress)
                 .userAgent(userAgent)
@@ -36,6 +52,5 @@ public class AccessLogFilter implements Filter {
 
         AccessLog savedLog = accessLogRepository.save(accessLog);
         log.info("savedLog = {}", savedLog);
-        filterChain.doFilter(servletRequest, servletResponse);
     }
 }
