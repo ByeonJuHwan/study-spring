@@ -14,20 +14,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
 
     private final AccessLogRepository accessLogRepository;
-    private final TelegramService telegramService;
 
     @Bean
     public FilterRegistrationBean<Filter> accessLogFilter() {
         FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
         filterFilterRegistrationBean.setFilter(new AccessLogFilter(accessLogRepository));
         filterFilterRegistrationBean.setOrder(1);
-        filterFilterRegistrationBean.setUrlPatterns(Collections.singleton("/*"));
+        filterFilterRegistrationBean.setUrlPatterns(List.of("/translate/data"));
         return filterFilterRegistrationBean;
     }
 

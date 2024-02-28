@@ -45,7 +45,7 @@ public class ExceptionCashingFilter implements Filter {
         if (wrapperResponse.getStatus() >= 500) {
             log.info("responseContent = {}", responseContent);
 //            TelegramService telegramService = applicationContext.getBean(TelegramService.class);
-            telegramService.sendMessage();
+            //telegramService.sendMessage();
         }
         wrapperResponse.copyBodyToResponse();
     }

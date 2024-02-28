@@ -31,7 +31,7 @@ public class TranslateController {
         return "translate";
     }
 
-    @PostMapping("/translate")
+    @PostMapping("/translate/data")
     @ResponseBody
     public String translateResult(@RequestBody TranslateDto dto) {
         log.info("dto = {}", dto);
