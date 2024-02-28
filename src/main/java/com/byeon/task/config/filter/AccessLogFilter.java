@@ -42,6 +42,8 @@ public class AccessLogFilter implements Filter {
 
         // 시간측정, 종료, 걸린시간 측정
         LocalDateTime endTime = LocalDateTime.now();
+
+        // fixme 초단위 보다는 micro second 까지 기록해보시는게 좋을 것 같습니다. 그럼 DB 컬럼도 변경해주셔야 합니다. 시간관련된게 나와서 말씀드리면 datetime 과 timestamp 간의 차이를 파악해보시고
         long elapseTime = Duration.between(startTime, endTime).getSeconds();
         log.info("elapseTime = {}", elapseTime);
 
@@ -56,6 +58,7 @@ public class AccessLogFilter implements Filter {
         String cashingResponse = new String(contentResponseAsArray, StandardCharsets.UTF_8);
         log.info("cashingResponse = {}", cashingResponse);
 
+        // todo 여기에 로그인된 유저가 사용한 api 라면 userId 를 한번 추가해보세요. 힌트는 쓰레드로컬 입니다.
         // 여기에서 위에서 측정한 시간을 AccessLog 에 추가.
         AccessLog accessLog = AccessLog.builder()
                 .ipAddress(ipAddress)
