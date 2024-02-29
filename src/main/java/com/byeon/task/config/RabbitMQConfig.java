@@ -18,17 +18,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
 
-    @Value("${spring.rabbitmq.host}")
-    private String rabbitmqHost;
+//    @Value("${spring.rabbitmq.host}")
+//    private String rabbitmqHost;
+//
+//    @Value("${spring.rabbitmq.port}")
+//    private int rabbitmqPort;
 
-    @Value("${spring.rabbitmq.port}")
-    private int rabbitmqPort;
-
-    @Value("${spring.rabbitmq.username}")
-    private String rabbitmqUsername;
-
-    @Value("${spring.rabbitmq.password}")
-    private String rabbitmqPassword;
+//    @Value("${spring.rabbitmq.username}")
+//    private String rabbitmqUsername;
+//
+//    @Value("${spring.rabbitmq.password}")
+//    private String rabbitmqPassword;
 
     @Value("${rabbitmq.queue.name}")
     private String queueName;
@@ -78,7 +78,8 @@ public class RabbitMQConfig {
         factory.setConnectionFactory(connectionFactory);
         factory.setBatchListener(true);  // 배치 리스너 활성화
         factory.setBatchSize(10);        // 한 번에 받을 메시지의 최대 개수
-        factory.setReceiveTimeout(60000L); // 배치를 완성하는 데 필요한 최대 대기 시간 (예: 10초)
+        factory.setReceiveTimeout(60000L); // 배치를 완성하는 데 필요한 최대 대기 시간 현재 1분
+        factory.setConcurrentConsumers(1); // 실행되는 스레드 수 설정 1로 설정해서 싱글스레드
         factory.setMessageConverter(jackson2JsonMessageConverter()); // 메시지 변환기 설정
         return factory;
     }

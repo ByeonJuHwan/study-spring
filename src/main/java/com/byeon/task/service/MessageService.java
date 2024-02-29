@@ -41,7 +41,6 @@ public class MessageService {
     @Transactional
     @RabbitListener(queues = "${rabbitmq.queue.name}", containerFactory = "rabbitListenerContainerFactory")     // todo concurrency 라는 속성이 있습니다. 쓰레드생성수를 컨트롤 할 수 있습니다. 싱글쓰레드로 처리할수있도록 해보세요.
     public void receiveMessage(List<AccessLogMQDto> accessLogs) {
-        log.error("size = {}", accessLogs.size()); // 1밖에 안나오는 이유..?    // fixme 로그레벨에 에러는 아닌것 같습니다. 여기는 정상으로 봐야겠죠.
         List<AccessLog> accessLogList = new ArrayList<>();
         for (AccessLogMQDto accessLog : accessLogs) {
             log.info("Received access log: {}", accessLog);
