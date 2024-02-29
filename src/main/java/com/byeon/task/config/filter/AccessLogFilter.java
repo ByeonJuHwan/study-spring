@@ -50,7 +50,7 @@ public class AccessLogFilter implements Filter {
 
             // 이 지점에서 예외가 발생하게 되면 ThreadLocal 에 있는 자원을 free 해줄수있는 기회가 없어집니다. 이부분을 패치해주시기 바랍니다.
             filterChain.doFilter(wrapperRequest, wrapperResponse);
-        }finally {
+
             // 시간측정, 종료, 걸린시간 측정
             // 초단위 보다는 micro second 까지 기록해보시는게 좋을 것 같습니다. 그럼 DB 컬럼도 변경해주셔야 합니다. 시간관련된게 나와서 말씀드리면 datetime 과 timestamp 간의 차이를 파악해보시고
             endTime = Instant.now();
@@ -71,16 +71,14 @@ public class AccessLogFilter implements Filter {
             // 여기에서 위에서 측정한 시간을 AccessLog 에 추가.
             // 그냥 insert 말고 여기서 RabbitMQ로 큐에 10개 저장되면 insert 되게 변경
             AccessLogMQDto accessLogMQDto = createAccessLogMQDto(accessLogDto, cashingRequest, cashingResponse, elapseTime);
-//            AccessLog savedLog = accessLogRepository.save(accessLog);
-//            log.info("savedLog = {}", savedLog);
-            // 여기서도 트라이 캐치..?
+            // AccessLog savedLog = accessLogRepository.save(accessLog);
             messageService.sendMQAccessLog(accessLogMQDto);
 
             // 만약 elapsedTime 이 {}초 이상 넘어가면 텔레그램으로 noti 를 주는건 어떨까요?
             isTimeOut(elapseTime); // 10초 이상이면 텔레그램 noti
 
             wrapperResponse.copyBodyToResponse();
-
+        }finally {
             threadLocalSaveUserID.removeStoredUserId();
         }
     }
