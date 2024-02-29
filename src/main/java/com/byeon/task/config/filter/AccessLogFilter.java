@@ -1,8 +1,9 @@
 package com.byeon.task.config.filter;
 
-import com.byeon.task.domain.entity.AccessLog;
 import com.byeon.task.dto.AccessLogDto;
+import com.byeon.task.dto.AccessLogMQDto;
 import com.byeon.task.repository.AccessLogRepository;
+import com.byeon.task.service.MessageService;
 import com.byeon.task.service.TelegramService;
 import com.byeon.task.service.threadlocal.ThreadLocalSaveUserID;
 import jakarta.servlet.*;
@@ -27,6 +28,7 @@ public class AccessLogFilter implements Filter {
     private final AccessLogRepository accessLogRepository;
     private final ThreadLocalSaveUserID threadLocalSaveUserID;
     private final TelegramService telegramService;
+    private final MessageService messageService;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -46,7 +48,7 @@ public class AccessLogFilter implements Filter {
             // 시간측정, 시작
             startTime = Instant.now();
 
-            // fixme 이 지점에서 예외가 발생하게 되면 ThreadLocal 에 있는 자원을 free 해줄수있는 기회가 없어집니다. 이부분을 패치해주시기 바랍니다.
+            // 이 지점에서 예외가 발생하게 되면 ThreadLocal 에 있는 자원을 free 해줄수있는 기회가 없어집니다. 이부분을 패치해주시기 바랍니다.
             filterChain.doFilter(wrapperRequest, wrapperResponse);
         }finally {
             // 시간측정, 종료, 걸린시간 측정
@@ -67,9 +69,12 @@ public class AccessLogFilter implements Filter {
 
             // 여기에 로그인된 유저가 사용한 api 라면 userId 를 한번 추가해보세요. 힌트는 쓰레드로컬 입니다.
             // 여기에서 위에서 측정한 시간을 AccessLog 에 추가.
-            AccessLog accessLog = createAccessLog(accessLogDto, cashingRequest, cashingResponse, elapseTime);
-            AccessLog savedLog = accessLogRepository.save(accessLog);
-            log.info("savedLog = {}", savedLog);
+            // 그냥 insert 말고 여기서 RabbitMQ로 큐에 10개 저장되면 insert 되게 변경
+            AccessLogMQDto accessLogMQDto = createAccessLogMQDto(accessLogDto, cashingRequest, cashingResponse, elapseTime);
+//            AccessLog savedLog = accessLogRepository.save(accessLog);
+//            log.info("savedLog = {}", savedLog);
+            // 여기서도 트라이 캐치..?
+            messageService.sendMQAccessLog(accessLogMQDto);
 
             // 만약 elapsedTime 이 {}초 이상 넘어가면 텔레그램으로 noti 를 주는건 어떨까요?
             isTimeOut(elapseTime); // 10초 이상이면 텔레그램 noti
@@ -80,12 +85,12 @@ public class AccessLogFilter implements Filter {
         }
     }
 
-    private AccessLog createAccessLog(AccessLogDto accessLogDto, String cashingRequest, String cashingResponse, double elapseTime) {
-        return AccessLog.builder()
+    private AccessLogMQDto createAccessLogMQDto(AccessLogDto accessLogDto, String cashingRequest, String cashingResponse, double elapseTime) {
+        return AccessLogMQDto.builder()
                 .ipAddress(accessLogDto.getIpAddress())
                 .userAgent(accessLogDto.getUserAgent())
                 .requestTime(accessLogDto.getRequestTime())
-                .method(accessLogDto.getRequestMethod())
+                .requestMethod(accessLogDto.getRequestMethod())
                 .uri(accessLogDto.getUri())
                 .requestBody(cashingRequest)
                 .responseBody(cashingResponse)
@@ -94,7 +99,7 @@ public class AccessLogFilter implements Filter {
                 .build();
     }
 
-    private static AccessLogDto createAccessLogDto(HttpServletRequest request) {
+    private AccessLogDto createAccessLogDto(HttpServletRequest request) {
         return AccessLogDto.builder()
                 .ipAddress(request.getRemoteAddr())
                 .userAgent(request.getHeader("User-Agent"))
