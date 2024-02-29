@@ -8,8 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
@@ -42,6 +40,7 @@ public class AccessLogFilter implements Filter {
         // 시간측정, 시작
         Instant startTime = Instant.now();
 
+        // fixme 이 지점에서 예외가 발생하게 되면 ThreadLocal 에 있는 자원을 free 해줄수있는 기회가 없어집니다. 이부분을 패치해주시기 바랍니다.
         filterChain.doFilter(wrapperRequest, wrapperResponse);
 
         // 시간측정, 종료, 걸린시간 측정
