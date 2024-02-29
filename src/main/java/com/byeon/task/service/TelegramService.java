@@ -22,6 +22,7 @@ public class TelegramService {
     @Value("${telegram.chatId}")
     private String chatId;
 
+    // fixme 이 지점을 @Async 로 처리해야 합니다. Telegram 에서 429 에러 등의 에러 상황이 발생하더라도 본 서비스에는 영향을 주지 말아야 합니다.
     public void sendMessage() {
         log.error("exception message start...");
         String telegramUrl = "https://api.telegram.org/bot" + telegramKey + "/sendMessage";

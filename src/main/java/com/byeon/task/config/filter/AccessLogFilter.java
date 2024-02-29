@@ -77,6 +77,8 @@ public class AccessLogFilter implements Filter {
         AccessLog savedLog = accessLogRepository.save(accessLog);
         log.info("savedLog = {}", savedLog);
 
+        // todo 만약 elapsedTime 이 {}초 이상 넘어가면 텔레그램으로 noti 를 주는건 어떨까요?
+
         wrapperResponse.copyBodyToResponse();
 
         threadLocalSaveUserID.removeStoredUserId();
