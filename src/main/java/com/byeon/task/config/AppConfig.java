@@ -26,7 +26,7 @@ public class AppConfig {
         FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
         filterFilterRegistrationBean.setFilter(new AccessLogFilter(accessLogRepository,threadLocalSaveUserID,telegramService));
         filterFilterRegistrationBean.setOrder(2);
-        filterFilterRegistrationBean.setUrlPatterns(List.of("/*"));    // 모든 API 에 대해서 엑세스로그를 남겨야할것 같습니다.
+        filterFilterRegistrationBean.setUrlPatterns(List.of("/translate/data","/ex","/timeout"));    // todo 모든 API 에 대해서 엑세스로그를 남겨야할것 같습니다.
         return filterFilterRegistrationBean;
     }
 
@@ -35,7 +35,7 @@ public class AppConfig {
         FilterRegistrationBean<Filter> filterFilterRegistrationBean = new FilterRegistrationBean<>();
         filterFilterRegistrationBean.setFilter(new CheckLoginUserFilter(threadLocalSaveUserID));
         filterFilterRegistrationBean.setOrder(1);
-        filterFilterRegistrationBean.setUrlPatterns(List.of("/*"));    // 모든 API 에 대해서 엑세스로그를 남겨야 되면 수정바랍니다.
+        filterFilterRegistrationBean.setUrlPatterns(List.of("/translate/data","/ex","/timeout"));    // todo 모든 API 에 대해서 엑세스로그를 남겨야 되면 수정바랍니다.
         return filterFilterRegistrationBean;
     }
 }
