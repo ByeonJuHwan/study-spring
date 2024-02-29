@@ -11,6 +11,11 @@ public class TelegramExceptionController {
 
     @GetMapping("/ex")
     public void triggerException() throws Exception {
-        throw new Exception(new IOException("테스트"));
+        throw new Exception(("테스트"));
+    }
+
+    @GetMapping("/timeout")
+    public void timeOut() throws InterruptedException {
+        Thread.sleep(11000);
     }
 }

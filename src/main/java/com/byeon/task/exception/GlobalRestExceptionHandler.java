@@ -21,7 +21,7 @@ public class GlobalRestExceptionHandler {
         // todo Telegram 으로 전송 !!!!   429 에러...
         // todo Rate Limit 을 이해하자.... 서버를 보호하는 방법이면서, 라이선스 정책과 관련 있다. (API 사용에 대해서 유료화 가능...)
 
-        telegramService.sendMessage();
+        telegramService.sendMessage(HttpStatus.INTERNAL_SERVER_ERROR, "서버에러 입니다.");
 
         return new RestError(HttpStatus.INTERNAL_SERVER_ERROR.toString(), "서버에러 입니다.");
     }

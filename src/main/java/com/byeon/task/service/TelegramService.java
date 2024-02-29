@@ -23,15 +23,24 @@ public class TelegramService {
     private String chatId;
 
     // fixme 이 지점을 @Async 로 처리해야 합니다. Telegram 에서 429 에러 등의 에러 상황이 발생하더라도 본 서비스에는 영향을 주지 말아야 합니다.
-    public void sendMessage() {
-        log.error("exception message start...");
+    public void sendMessage(HttpStatus status, String caused) {
+        log.error("message start...");
+        sendToTelegram(status, caused);
+    }
+
+    /**
+     * Http Status, 에러메세지를 인자로 받음으로서 어디서든 사용가능하게 변경
+     * @param status HttpStatus :) 500, 400 ...
+     * @param caused 텔레그램으로 보낼 에러 원인 메세지
+     */
+    private void sendToTelegram(HttpStatus status, String caused) {
         String telegramUrl = "https://api.telegram.org/bot" + telegramKey + "/sendMessage";
 
         // Header json 방식으로
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String exceptionMessage = "code : " + HttpStatus.INTERNAL_SERVER_ERROR.toString() + " message : 서버에러입니다.";
+        String exceptionMessage = "code : " + status.toString() + " message : " + caused;
 
         String message = "{\"chat_id\":\"" + chatId + "\", \"text\":\"" + exceptionMessage + "\"}";
 
