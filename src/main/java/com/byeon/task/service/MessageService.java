@@ -36,10 +36,12 @@ public class MessageService {
         rabbitTemplate.convertAndSend(exchangeName, routingKey, accessLog);
     }
 
+    // fixme 네 여기서는 메시지를 1개만 받고 여기에서 바로 엑세스로그를 저장해야합니다. 물론 던지는 쪽에서도 1개씩만 전달하게 되겠지요.
+    // fixme 여기에서 예를 들어 10개씩 모아서 저장할 수도 있겠지요. 우선 하나씩 저장하는것은 맞습니다.
     @Transactional
-    @RabbitListener(queues = "${rabbitmq.queue.name}", containerFactory = "rabbitListenerContainerFactory")
+    @RabbitListener(queues = "${rabbitmq.queue.name}", containerFactory = "rabbitListenerContainerFactory")     // todo concurrency 라는 속성이 있습니다. 쓰레드생성수를 컨트롤 할 수 있습니다. 싱글쓰레드로 처리할수있도록 해보세요.
     public void receiveMessage(List<AccessLogMQDto> accessLogs) {
-        log.error("size = {}", accessLogs.size()); // 1밖에 안나오는 이유..?
+        log.error("size = {}", accessLogs.size()); // 1밖에 안나오는 이유..?    // fixme 로그레벨에 에러는 아닌것 같습니다. 여기는 정상으로 봐야겠죠.
         List<AccessLog> accessLogList = new ArrayList<>();
         for (AccessLogMQDto accessLog : accessLogs) {
             log.info("Received access log: {}", accessLog);
