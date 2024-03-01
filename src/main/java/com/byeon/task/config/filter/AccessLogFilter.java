@@ -108,6 +108,9 @@ public class AccessLogFilter implements Filter {
     }
 
     private void isTimeOut(double elapseTime) {
+
+        // fixme 10 이면 10초가 아닌것 같습니다 :) 업데이트 필요합니다.
+        // todo 이런 값처럼 처음에 000 인줄알았다가 runtime 값을 변경하게 되는 경우가 있을텐데요. 굳이 배포하지 않고 어떻게 하면 쉽게 변경할 수 있을까요? 한번 생각해보시고 실행해보시면 좋을 것 같아요.
         if (elapseTime > 10) {
             telegramService.sendMessage(HttpStatus.REQUEST_TIMEOUT, "시간 단축 필요!!");
         }
