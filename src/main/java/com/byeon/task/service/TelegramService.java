@@ -44,7 +44,7 @@ public class TelegramService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String exceptionMessage = "code : " + status.toString() + " message : " + caused;
+        String exceptionMessage = "code : " + status.toString() + System.lineSeparator() +"message : " + caused;
 
         String message = "{\"chat_id\":\"" + chatId + "\", \"text\":\"" + exceptionMessage + "\"}";
 

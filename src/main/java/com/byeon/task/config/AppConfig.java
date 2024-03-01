@@ -1,5 +1,6 @@
 package com.byeon.task.config;
 
+import com.byeon.task.common.CommonMessage;
 import com.byeon.task.config.filter.AccessLogFilter;
 import com.byeon.task.config.filter.CheckLoginUserFilter;
 import com.byeon.task.repository.AccessLogRepository;
@@ -25,7 +26,7 @@ public class AppConfig {
     private final TelegramService telegramService;
     private final MessageService messageService;
     private final ConfigRepository configRepository;
-    private final MessageSource messageSource;
+    private final CommonMessage messageSource;
 
     @Bean
     public FilterRegistrationBean<Filter> accessLogFilter() {
