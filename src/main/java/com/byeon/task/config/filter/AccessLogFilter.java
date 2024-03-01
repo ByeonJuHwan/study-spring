@@ -119,16 +119,20 @@ public class AccessLogFilter implements Filter {
         // fixme 10 이면 10초가 아닌것 같습니다 :) 업데이트 필요합니다.
         // todo 이런 값처럼 처음에 000 인줄알았다가 runtime 값을 변경하게 되는 경우가 있을텐데요. 굳이 배포하지 않고 어떻게 하면 쉽게 변경할 수 있을까요? 한번 생각해보시고 실행해보시면 좋을 것 같아요.
         // DB 에 저장되어 있는 Timeout 시간 조회 -> sql 로 직접 넣기
+
 //        Config config = configRepository.findConfigByConfigName("confElapseTime").orElseThrow(() -> new RuntimeException("설정값이 없습니다."));
 //        log.info("config = {}", config);
 //        double confElapseTime = Double.parseDouble(config.getConfigValue());
 
-        // messages.properties 값에 의해 변경
+        // messages.properties 값에 의해 변경,
+        // todo messageSource 를 한번더 wrapping 하여 클래스를 만들어 사용하는게 어떨까요 ? 파라미터에 null, Local.getDefault() 를 넣는것보다는 좀더 낫지 않을까 해서요. getTimeoutForElapsedTime() 이정도로 하면 좋지 않을까 싶네요.
         String confElapseTimeStr = messageSource.getMessage("timeout.elapseTime", null, Locale.getDefault());
         double confElapseTime = Double.parseDouble(confElapseTimeStr);
         log.info("confElapseTime = {}", confElapseTime);
         log.info("elapseTime = {}", elapseTime);
         if (elapseTime >= confElapseTime) {
+
+            // todo 좀더 구체적인 메시지가 있어야 되지 않을까 해요. 메시지만 보더라도 어떤 API 에서 문제가 발생했고 얼마나 걸렸는지를 알면 좋을 것 같습니다.
             telegramService.sendMessage(HttpStatus.REQUEST_TIMEOUT, "시간 단축 필요!!");
         }
     }
