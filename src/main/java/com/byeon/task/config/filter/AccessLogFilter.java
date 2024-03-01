@@ -1,6 +1,6 @@
 package com.byeon.task.config.filter;
 
-import com.byeon.task.domain.entity.Config;
+import com.byeon.task.common.CommonMessage;
 import com.byeon.task.dto.AccessLogDto;
 import com.byeon.task.dto.AccessLogMQDto;
 import com.byeon.task.repository.AccessLogRepository;
@@ -13,8 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -24,7 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Locale;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,7 +33,7 @@ public class AccessLogFilter implements Filter {
     private final MessageService messageService;
     private final ConfigRepository configRepository;
 
-    private final MessageSource messageSource;
+    private final CommonMessage messageSource;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -83,7 +80,7 @@ public class AccessLogFilter implements Filter {
             messageService.sendMQAccessLog(accessLogMQDto);
 
             // 만약 elapsedTime 이 {}초 이상 넘어가면 텔레그램으로 noti 를 주는건 어떨까요?
-            isTimeOut(elapseTime); // 10초 이상이면 텔레그램 noti
+            isTimeOut(elapseTime, accessLogDto.getUri()); // 10초 이상이면 텔레그램 noti
 
             wrapperResponse.copyBodyToResponse();
         }finally {
@@ -115,7 +112,7 @@ public class AccessLogFilter implements Filter {
                 .build();
     }
 
-    private void isTimeOut(double elapseTime) {
+    private void isTimeOut(double elapseTime, String uri) {
         // fixme 10 이면 10초가 아닌것 같습니다 :) 업데이트 필요합니다.
         // todo 이런 값처럼 처음에 000 인줄알았다가 runtime 값을 변경하게 되는 경우가 있을텐데요. 굳이 배포하지 않고 어떻게 하면 쉽게 변경할 수 있을까요? 한번 생각해보시고 실행해보시면 좋을 것 같아요.
         // DB 에 저장되어 있는 Timeout 시간 조회 -> sql 로 직접 넣기
@@ -126,14 +123,14 @@ public class AccessLogFilter implements Filter {
 
         // messages.properties 값에 의해 변경,
         // todo messageSource 를 한번더 wrapping 하여 클래스를 만들어 사용하는게 어떨까요 ? 파라미터에 null, Local.getDefault() 를 넣는것보다는 좀더 낫지 않을까 해서요. getTimeoutForElapsedTime() 이정도로 하면 좋지 않을까 싶네요.
-        String confElapseTimeStr = messageSource.getMessage("timeout.elapseTime", null, Locale.getDefault());
+        String confElapseTimeStr = messageSource.getTimeoutForElapsedTime();
         double confElapseTime = Double.parseDouble(confElapseTimeStr);
         log.info("confElapseTime = {}", confElapseTime);
         log.info("elapseTime = {}", elapseTime);
         if (elapseTime >= confElapseTime) {
 
             // todo 좀더 구체적인 메시지가 있어야 되지 않을까 해요. 메시지만 보더라도 어떤 API 에서 문제가 발생했고 얼마나 걸렸는지를 알면 좋을 것 같습니다.
-            telegramService.sendMessage(HttpStatus.REQUEST_TIMEOUT, "시간 단축 필요!!");
+            telegramService.sendMessage(HttpStatus.REQUEST_TIMEOUT, System.lineSeparator() + "uri : " + uri + System.lineSeparator() + "걸린시간 : " + elapseTime + " 초" + System.lineSeparator() + "해당 로직 수정이 필요합니다!");
         }
     }
 }
