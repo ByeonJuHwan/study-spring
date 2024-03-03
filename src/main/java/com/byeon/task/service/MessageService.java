@@ -41,12 +41,20 @@ public class MessageService {
     @Transactional
     @RabbitListener(queues = "${rabbitmq.queue.name}", containerFactory = "rabbitListenerContainerFactory")     // todo concurrency 라는 속성이 있습니다. 쓰레드생성수를 컨트롤 할 수 있습니다. 싱글쓰레드로 처리할수있도록 해보세요.
     public void receiveMessage(List<AccessLogMQDto> accessLogs) {
-        List<AccessLog> accessLogList = new ArrayList<>();
-        for (AccessLogMQDto accessLog : accessLogs) {
-            log.info("Received access log: {}", accessLog);
-            accessLogList.add(createAccessLog(accessLog));
+        try {
+            List<AccessLog> accessLogList = new ArrayList<>();
+            for (AccessLogMQDto accessLog : accessLogs) {
+                log.info("Received access log: {}", accessLog);
+                accessLogList.add(createAccessLog(accessLog));
+            }
+            repository.saveAll(accessLogList);
+        }catch (Exception e) {
+            // dead queue 로 ... or 아니면 다른 전략이 필요.
+            // Telegram 으로 보내기도 하고...
+            // Telegram 보내는 컨슈머한테 보내달라고 한다. (MSA)
+            //   - HTTP X
+            //   - MQ 로 연결. (비동기연결)
         }
-        repository.saveAll(accessLogList);
     }
 
     private AccessLog createAccessLog(AccessLogMQDto accessLogMQDto) {
