@@ -13,6 +13,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -112,7 +115,18 @@ public class AccessLogFilter implements Filter {
                 .build();
     }
 
-    private void isTimeOut(double elapseTime, String uri) {
+    /**
+     * 1. 캐시를 저장하고 찾고 로직이 필요한가?
+     *  --> 답: 아니오. ===> 스프링 캐시 추상화 라는 기술이 해줍니다.
+     *  --> AOP 라는 기술이 이를 가능하게 합니다.
+     *
+     * 2. 캐시설정
+     *  --> 1. 인메모리 (분산X, WAS별로 다르겟죠. 그래도 되면 써도 됩니다.)
+     *  --> 2. Redis (분산O) --> O(1) 언제나. --> 메모리라서, 날라가죠. 디폴트로 1분당 한번씩 메모리 to Disk 저장.
+     *    : 20000 TPS
+     *    : HA: 클러스터링 고려하거나 샤딩하거냐, 둘다 하거나
+     */
+    public void isTimeOut(double elapseTime, String uri) {
         // fixme 10 이면 10초가 아닌것 같습니다 :) 업데이트 필요합니다.
         // todo 이런 값처럼 처음에 000 인줄알았다가 runtime 값을 변경하게 되는 경우가 있을텐데요. 굳이 배포하지 않고 어떻게 하면 쉽게 변경할 수 있을까요? 한번 생각해보시고 실행해보시면 좋을 것 같아요.
         // DB 에 저장되어 있는 Timeout 시간 조회 -> sql 로 직접 넣기
