@@ -1,57 +1,59 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>홈페이지</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>번역기 홈페이지</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            padding-top: 40px;
-            padding-bottom: 40px;
-            background-color: #343a40; /* 배경색 변경 */
-            color: #ffffff; /* 글씨색 변경 */
+        body, html {
+            height: 100%;
+            margin: 0;
         }
-
+        .bg-full {
+            min-height: 100%; /* Full height */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .footer-custom {
+            background-color: #222; /* 푸터 배경색 변경 */
+            color: #ddd; /* 푸터 글씨색 변경 */
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 60px; /* 푸터 높이 */
+            line-height: 60px; /* 텍스트를 푸터 중앙에 위치시킴 */
+        }
         .navbar-custom {
-            background-color: #222; /* 어두운 배경색 */
+            background-color: #555; /* 헤더 배경색 변경 */
+            color: #fff;
         }
-
-        .navbar-custom .navbar-nav .nav-link {
-            color: #ddd; /* 네비게이션 링크 색상 */
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link {
+            color: #fff;
         }
-
-        .navbar-custom .navbar-nav .nav-link:hover {
-            color: #ffffff; /* 네비게이션 링크 호버 색상 */
+        .centered-form {
+            min-width: 300px; /* Set a minimum width for the form */
         }
-
-        .form-home {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,.05);
-            color: #333; /* 내부 텍스트 색상 변경 */
-        }
-
-        .form-home button {
-            margin-top: 10px;
-        }
-
-        .footer {
-            background-color: #222; /* 푸터 배경색 */
-            color: #ddd; /* 푸터 글씨색 */
-            padding: 10px 0;
-        }
-
-        .btn-primary, .btn-secondary, .btn-danger {
-            margin-top: 10px; /* 버튼 상단 여백 */
+        .nav-item {
+            margin-right: 20px; /* 오른쪽 마진 추가 */
+            /* 또는 */
+            padding-right: 20px; /* 오른쪽 패딩 추가 */
         }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+<nav class="navbar navbar-expand-lg navbar-custom">
     <div class="container">
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <a class="navbar-brand" href="/">번역기</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item" sec:authorize="isAnonymous()">
                     <a class="nav-link" th:href="@{/login}">로그인</a>
@@ -61,7 +63,12 @@
                 </li>
                 <li class="nav-item" sec:authorize="isAuthenticated()">
                     <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="btn btn-danger">로그아웃</button>
+                        <button type="submit" class="btn btn-outline-light">로그아웃</button>
+                    </form>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <form th:action="@{/notes}" method="get">
+                        <button type="submit" class="btn btn-outline-light">단어장</button>
                     </form>
                 </li>
             </ul>
@@ -69,29 +76,28 @@
     </div>
 </nav>
 
-<div class="container form-home d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-    <div class="text-center">
-        <h2>어서오세요</h2>
+<div class="bg-full">
+    <div class="centered-form text-center">
         <th:block sec:authorize="isAuthenticated()">
-            <p>열심히 해보겠습니다!</p>
-            <span sec:authentication="name"></span><span> 님 어서오세요!</span>
-        </th:block>
-        <p sec:authorize="isAnonymous()">열심히 해보겠습니다!</p>
-        <th:block sec:authorize="isAuthenticated()">
+            <h1>번역기 사용하기</h1>
+            <p>어서오세요, <span sec:authentication="name"></span>님!</p>
             <form th:action="@{/translate}" method="get">
-                <button type="submit" class="btn btn-lg btn-primary btn-block">번역기 사용하기</button>
+                <button type="submit" class="btn btn-primary btn-lg">번역기 사용하기</button>
             </form>
         </th:block>
         <th:block sec:authorize="isAnonymous()">
-            <a th:href="@{/login}" class="btn btn-lg btn-primary btn-block" role="button">로그인</a>
-            <a th:href="@{/join}" class="btn btn-lg btn-secondary btn-block" role="button">회원가입</a>
+            <h1>실시간 번역기 입니다</h1>
+            <div class="mt-4">
+                <a th:href="@{/login}" class="btn btn-primary btn-lg">로그인</a>
+                <a th:href="@{/join}" class="btn btn-secondary btn-lg">회원가입</a>
+            </div>
         </th:block>
     </div>
 </div>
 
-<div class="footer">
-    <p class="text-center">© 2024 회사명. 모든 권리 보유.</p>
-</div>
+<footer class="footer-custom">
+    &copy; 2024 번역기 서비스. 모든 권리 보유.
+</footer>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

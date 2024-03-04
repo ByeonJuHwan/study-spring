@@ -1,18 +1,28 @@
 package com.byeon.task.consumers;
 
 import com.byeon.task.domain.entity.AccessLog;
+import com.byeon.task.domain.entity.Member;
 import com.byeon.task.dto.AccessLogMQDto;
+import com.byeon.task.dto.NoteCreateDto;
 import com.byeon.task.repository.AccessLogRepository;
+import com.byeon.task.repository.MemberRepository;
+import com.byeon.task.service.NoteService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -27,6 +37,8 @@ public class MessageService {
 
     private final RabbitTemplate rabbitTemplate;
     private final AccessLogRepository repository;
+    private final MemberRepository memberRepository;
+    private final NoteService noteService;
 
     public void sendMQAccessLog(AccessLogMQDto accessLog) {
         log.info("sendMQ = {}", accessLog);
@@ -37,15 +49,9 @@ public class MessageService {
     // fixme 여기에서 예를 들어 10개씩 모아서 저장할 수도 있겠지요. 우선 하나씩 저장하는것은 맞습니다.
     @Transactional
     @RabbitListener(queues = RabbitMQConfig.ACCESS_LOG_QUEUE, concurrency = "1", containerFactory = "rabbitListenerContainerFactory")// todo concurrency 라는 속성이 있습니다. 쓰레드생성수를 컨트롤 할 수 있습니다. 싱글쓰레드로 처리할수있도록 해보세요.
-    public void receiveMessage(AccessLogMQDto accessLogs) {
+    public void receiveMessage(AccessLogMQDto accessLog) {
         try {
-//            List<AccessLog> accessLogList = new ArrayList<>();
-//            for (AccessLogMQDto accessLog : accessLogs) {
-//                log.info("Received access log: {}", accessLog);
-//                accessLogList.add(createAccessLog(accessLog));
-//            }
-//            repository.saveAll(accessLogList);
-            log.info("액서스로그");
+            repository.save(createAccessLog(accessLog));
         } catch (Exception e) {
             // dead queue 로 ... or 아니면 다른 전략이 필요.
             // Telegram 으로 보내기도 하고...
@@ -57,12 +63,35 @@ public class MessageService {
 
     @Transactional
     @RabbitListener(queues = RabbitMQConfig.VOCAL_QUEUE, concurrency = "1", containerFactory = "rabbitListenerContainerFactory")
-    public void insertVocNote(AccessLogMQDto accessLogs) {
+    public void insertVocNote(AccessLogMQDto accessLog) {
         try {
-            log.info("voca 도착");
+            if (!accessLog.getUserId().equals("anonymousUser")) {
+                NoteCreateDto noteCreateDto = new NoteCreateDto();
+                String requestBody = accessLog.getRequestBody();
+                String responseBody = accessLog.getResponseBody();
+
+                ObjectMapper mapper = new ObjectMapper();
+                noteCreateDto.setTranslateMessage(getTranslateResult(mapper, responseBody));
+                noteCreateDto.setSendMessage(getSentence(mapper, requestBody));
+
+                // 계속 member 를 검색하는 로직이 돔 -> 로그인 정보를 어디 보관하고 가져다 쓰면 좋을거같음
+                Member member = memberRepository.findMemberByUserId(accessLog.getUserId()).orElseThrow(() -> new RuntimeException("임시"));
+                noteService.saveVocalNote(noteCreateDto,member);
+            }
         } catch (Exception e) {
             log.info(e.getMessage());
         }
+    }
+
+    private String getSentence(ObjectMapper mapper, String requestBody) throws JsonProcessingException {
+        JsonNode Sentence = mapper.readTree(requestBody);
+        return Sentence == null ? null : Sentence.path("text").asText();
+    }
+
+    private String getTranslateResult(ObjectMapper mapper, String responseBody) throws JsonProcessingException {
+        JsonNode translate = mapper.readTree(responseBody);
+        JsonNode translateResult = translate.path("translations");
+        return translateResult == null ? null : translateResult.get(0).path("text").asText();
     }
 
     private AccessLog createAccessLog(AccessLogMQDto accessLogMQDto) {
