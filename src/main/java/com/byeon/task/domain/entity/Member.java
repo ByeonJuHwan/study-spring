@@ -1,11 +1,11 @@
 package com.byeon.task.domain.entity;
 
 import com.byeon.task.dto.MemberJoinDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,12 +22,16 @@ public class Member {
 
     private String password;
 
+    @OneToMany(mappedBy = "member")
+    private List<Note> notes = new ArrayList<>();
+
 
     @Builder
-    public Member(Long id, String userId, String password) {
+    public Member(Long id, String userId, String password, List<Note> notes) {
         this.id = id;
         this.userId = userId;
         this.password = password;
+        this.notes = notes;
     }
 
     public static Member toEntity(MemberJoinDto dto) {
