@@ -1,6 +1,6 @@
 package com.byeon.task.controller;
 
-import com.byeon.task.service.MessageService;
+import com.byeon.task.consumers.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
