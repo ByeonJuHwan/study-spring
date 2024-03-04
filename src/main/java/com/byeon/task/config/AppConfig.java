@@ -5,13 +5,12 @@ import com.byeon.task.config.filter.AccessLogFilter;
 import com.byeon.task.config.filter.CheckLoginUserFilter;
 import com.byeon.task.repository.AccessLogRepository;
 import com.byeon.task.repository.ConfigRepository;
-import com.byeon.task.service.MessageService;
+import com.byeon.task.consumers.MessageService;
 import com.byeon.task.service.TelegramService;
 import com.byeon.task.service.threadlocal.ThreadLocalSaveUserID;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
