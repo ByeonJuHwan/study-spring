@@ -1,4 +1,4 @@
-package com.byeon.task.controller;
+package com.byeon.task.controller.page;
 
 import com.byeon.task.dto.MemberJoinDto;
 import com.byeon.task.service.front.MemberFrontService;

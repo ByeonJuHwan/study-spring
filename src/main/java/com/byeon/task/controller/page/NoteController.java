@@ -1,4 +1,4 @@
-package com.byeon.task.controller;
+package com.byeon.task.controller.page;
 
 import com.byeon.task.domain.entity.Note;
 import com.byeon.task.dto.NoteSearchDto;
