@@ -24,6 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 저는 MessageService 와 AccessLogConsumer, VocalConsumer 를 따로 분리하는게 좋아 보입니다.
+ * 컨슈머 단을 아예 별도로 분리할수도 있기 때문에 애초부터 따로 노는게 좋을 것 같아요.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,7 @@ public class MessageService {
     private final MemberRepository memberRepository;
     private final NoteService noteService;
 
+    // todo 여기도 @Async 게 있으면 좀더 비동기적으로 해볼수있겠지요. 물론 너무 @Async 를 남발하게 되면 별도의 쓰레드풀도 힘들어할수도 있습니다. 그러면 배보다 배꼽이 더 커질수는 있어서요.
     public void sendMQAccessLog(AccessLogMQDto accessLog) {
         log.info("sendMQ = {}", accessLog);
         rabbitTemplate.convertAndSend(RabbitMQConfig.FANOUT_EXCHANGE, "", accessLog);
@@ -53,6 +58,7 @@ public class MessageService {
         try {
             repository.save(createAccessLog(accessLog));
         } catch (Exception e) {
+            // todo 네, 아래 전략중에 하나로도 해보시는게 좋을 것 같네요.
             // dead queue 로 ... or 아니면 다른 전략이 필요.
             // Telegram 으로 보내기도 하고...
             // Telegram 보내는 컨슈머한테 보내달라고 한다. (MSA)

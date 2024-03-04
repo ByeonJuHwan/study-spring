@@ -102,6 +102,7 @@ public class AccessLogFilter implements Filter {
         // todo 이런 값처럼 처음에 000 인줄알았다가 runtime 값을 변경하게 되는 경우가 있을텐데요. 굳이 배포하지 않고 어떻게 하면 쉽게 변경할 수 있을까요? 한번 생각해보시고 실행해보시면 좋을 것 같아요.
         // DB 에 저장되어 있는 Timeout 시간 조회 -> sql 로 직접 넣기
 
+        // todo ConfigService 를 만들고요. 거기에서 @Cacheable 을 활용해봤으면 합니다. 기본적으로 인메모리 구조로 세팅해보시고 한번 시도해보시죠..
 //        Config config = configRepository.findConfigByConfigName("confElapseTime").orElseThrow(() -> new RuntimeException("설정값이 없습니다."));
 //        log.info("config = {}", config);
 //        double confElapseTime = Double.parseDouble(config.getConfigValue());
@@ -119,12 +120,14 @@ public class AccessLogFilter implements Filter {
         }
     }
 
+    // todo 여기 메소드 이름에 Cashing 이 들어가 있는게 조금 이해가 안되네요. 앞으로 다루게 될 캐시와 오버랩 되면서 햇갈릴 것 같아서 리네이밍을 해주시면 좋을것같습니다.
     private static String getCashingResponse(ContentCachingResponseWrapper wrapperResponse) {
         byte[] contentResponseAsArray = wrapperResponse.getContentAsByteArray();
         String cashingResponse = new String(contentResponseAsArray, StandardCharsets.UTF_8);
         return cashingResponse;
     }
 
+    // todo 여기 메소드 이름에 Cashing 이 들어가 있는게 조금 이해가 안되네요. 앞으로 다루게 될 캐시와 오버랩 되면서 햇갈릴 것 같아서 리네이밍을 해주시면 좋을것같습니다.
     private static String getCashingRequest(ContentCachingRequestWrapper wrapperRequest) {
         byte[] contentRequestAsArray = wrapperRequest.getContentAsByteArray();
         return new String(contentRequestAsArray, StandardCharsets.UTF_8);
