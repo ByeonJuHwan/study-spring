@@ -62,18 +62,18 @@ public class AccessLogFilter implements Filter {
             elapseTime = ((double) Duration.between(startTime, endTime).toNanos() / 1000) / 1_000_000.0;
 
             //  여기에서 wrapperRequest requestBody 를 꺼내서 AccessLog 에 추가.
-            String cashingRequest = getCashingRequest(wrapperRequest);
-            log.info("cashingRequest = {}", cashingRequest);
+            String clientRequest = getRequest(wrapperRequest);
+            log.info("clientRequest = {}", clientRequest);
 
 
             // 여기에서 wrapperResponse responseBody를 꺼내서 AccessLog 에 추가.
-            String cashingResponse = getCashingResponse(wrapperResponse);
-            log.info("cashingResponse = {}", cashingResponse);
+            String clientResponse = getResponse(wrapperResponse);
+            log.info("clientResponse = {}", clientResponse);
 
             // 여기에 로그인된 유저가 사용한 api 라면 userId 를 한번 추가해보세요. 힌트는 쓰레드로컬 입니다.
             // 여기에서 위에서 측정한 시간을 AccessLog 에 추가.
             // 그냥 insert 말고 여기서 RabbitMQ로 큐에 10개 저장되면 insert 되게 변경
-            AccessLogMQDto accessLogMQDto = createAccessLogMQDto(accessLogDto, cashingRequest, cashingResponse, elapseTime);
+            AccessLogMQDto accessLogMQDto = createAccessLogMQDto(accessLogDto, clientRequest, clientResponse, elapseTime);
             // AccessLog savedLog = accessLogRepository.save(accessLog);
             messageService.sendMQAccessLog(accessLogMQDto);
 
@@ -120,15 +120,15 @@ public class AccessLogFilter implements Filter {
         }
     }
 
-    // todo 여기 메소드 이름에 Cashing 이 들어가 있는게 조금 이해가 안되네요. 앞으로 다루게 될 캐시와 오버랩 되면서 햇갈릴 것 같아서 리네이밍을 해주시면 좋을것같습니다.
-    private static String getCashingResponse(ContentCachingResponseWrapper wrapperResponse) {
+    //  여기 메소드 이름에 Cashing 이 들어가 있는게 조금 이해가 안되네요. 앞으로 다루게 될 캐시와 오버랩 되면서 햇갈릴 것 같아서 리네이밍을 해주시면 좋을것같습니다.
+    private static String getResponse(ContentCachingResponseWrapper wrapperResponse) {
         byte[] contentResponseAsArray = wrapperResponse.getContentAsByteArray();
         String cashingResponse = new String(contentResponseAsArray, StandardCharsets.UTF_8);
         return cashingResponse;
     }
 
-    // todo 여기 메소드 이름에 Cashing 이 들어가 있는게 조금 이해가 안되네요. 앞으로 다루게 될 캐시와 오버랩 되면서 햇갈릴 것 같아서 리네이밍을 해주시면 좋을것같습니다.
-    private static String getCashingRequest(ContentCachingRequestWrapper wrapperRequest) {
+    // 여기 메소드 이름에 Cashing 이 들어가 있는게 조금 이해가 안되네요. 앞으로 다루게 될 캐시와 오버랩 되면서 햇갈릴 것 같아서 리네이밍을 해주시면 좋을것같습니다.
+    private static String getRequest(ContentCachingRequestWrapper wrapperRequest) {
         byte[] contentRequestAsArray = wrapperRequest.getContentAsByteArray();
         return new String(contentRequestAsArray, StandardCharsets.UTF_8);
     }
