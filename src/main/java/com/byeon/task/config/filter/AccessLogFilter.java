@@ -5,7 +5,7 @@ import com.byeon.task.dto.AccessLogDto;
 import com.byeon.task.dto.AccessLogMQDto;
 import com.byeon.task.repository.AccessLogRepository;
 import com.byeon.task.repository.ConfigRepository;
-import com.byeon.task.service.MessageService;
+import com.byeon.task.consumers.MessageService;
 import com.byeon.task.service.TelegramService;
 import com.byeon.task.service.threadlocal.ThreadLocalSaveUserID;
 import jakarta.servlet.*;
@@ -13,9 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -65,14 +62,12 @@ public class AccessLogFilter implements Filter {
             elapseTime = ((double) Duration.between(startTime, endTime).toNanos() / 1000) / 1_000_000.0;
 
             //  여기에서 wrapperRequest requestBody 를 꺼내서 AccessLog 에 추가.
-            byte[] contentRequestAsArray = wrapperRequest.getContentAsByteArray();
-            String cashingRequest = new String(contentRequestAsArray, StandardCharsets.UTF_8);
+            String cashingRequest = getCashingRequest(wrapperRequest);
             log.info("cashingRequest = {}", cashingRequest);
 
 
             // 여기에서 wrapperResponse responseBody를 꺼내서 AccessLog 에 추가.
-            byte[] contentResponseAsArray = wrapperResponse.getContentAsByteArray();
-            String cashingResponse = new String(contentResponseAsArray, StandardCharsets.UTF_8);
+            String cashingResponse = getCashingResponse(wrapperResponse);
             log.info("cashingResponse = {}", cashingResponse);
 
             // 여기에 로그인된 유저가 사용한 api 라면 userId 를 한번 추가해보세요. 힌트는 쓰레드로컬 입니다.
@@ -89,30 +84,6 @@ public class AccessLogFilter implements Filter {
         }finally {
             threadLocalSaveUserID.removeStoredUserId();
         }
-    }
-
-    private AccessLogMQDto createAccessLogMQDto(AccessLogDto accessLogDto, String cashingRequest, String cashingResponse, double elapseTime) {
-        return AccessLogMQDto.builder()
-                .ipAddress(accessLogDto.getIpAddress())
-                .userAgent(accessLogDto.getUserAgent())
-                .requestTime(accessLogDto.getRequestTime())
-                .requestMethod(accessLogDto.getRequestMethod())
-                .uri(accessLogDto.getUri())
-                .requestBody(cashingRequest)
-                .responseBody(cashingResponse)
-                .elapseTime(elapseTime)
-                .userId(threadLocalSaveUserID.getUserId())
-                .build();
-    }
-
-    private AccessLogDto createAccessLogDto(HttpServletRequest request) {
-        return AccessLogDto.builder()
-                .ipAddress(request.getRemoteAddr())
-                .userAgent(request.getHeader("User-Agent"))
-                .requestTime(LocalDateTime.now())
-                .requestMethod(request.getMethod())
-                .uri(request.getRequestURI())
-                .build();
     }
 
     /**
@@ -146,5 +117,40 @@ public class AccessLogFilter implements Filter {
             // todo 좀더 구체적인 메시지가 있어야 되지 않을까 해요. 메시지만 보더라도 어떤 API 에서 문제가 발생했고 얼마나 걸렸는지를 알면 좋을 것 같습니다.
             telegramService.sendMessage(HttpStatus.REQUEST_TIMEOUT, System.lineSeparator() + "uri : " + uri + System.lineSeparator() + "걸린시간 : " + elapseTime + " 초" + System.lineSeparator() + "해당 로직 수정이 필요합니다!");
         }
+    }
+
+    private static String getCashingResponse(ContentCachingResponseWrapper wrapperResponse) {
+        byte[] contentResponseAsArray = wrapperResponse.getContentAsByteArray();
+        String cashingResponse = new String(contentResponseAsArray, StandardCharsets.UTF_8);
+        return cashingResponse;
+    }
+
+    private static String getCashingRequest(ContentCachingRequestWrapper wrapperRequest) {
+        byte[] contentRequestAsArray = wrapperRequest.getContentAsByteArray();
+        return new String(contentRequestAsArray, StandardCharsets.UTF_8);
+    }
+
+    private AccessLogMQDto createAccessLogMQDto(AccessLogDto accessLogDto, String cashingRequest, String cashingResponse, double elapseTime) {
+        return AccessLogMQDto.builder()
+                .ipAddress(accessLogDto.getIpAddress())
+                .userAgent(accessLogDto.getUserAgent())
+                .requestTime(accessLogDto.getRequestTime())
+                .requestMethod(accessLogDto.getRequestMethod())
+                .uri(accessLogDto.getUri())
+                .requestBody(cashingRequest)
+                .responseBody(cashingResponse)
+                .elapseTime(elapseTime)
+                .userId(threadLocalSaveUserID.getUserId())
+                .build();
+    }
+
+    private AccessLogDto createAccessLogDto(HttpServletRequest request) {
+        return AccessLogDto.builder()
+                .ipAddress(request.getRemoteAddr())
+                .userAgent(request.getHeader("User-Agent"))
+                .requestTime(LocalDateTime.now())
+                .requestMethod(request.getMethod())
+                .uri(request.getRequestURI())
+                .build();
     }
 }
