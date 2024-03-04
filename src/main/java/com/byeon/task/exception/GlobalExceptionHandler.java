@@ -22,17 +22,17 @@ import java.net.URL;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)   // 400
-    public Object runtimeException(RuntimeException e) {
-
-        //
-        return null;
-    }
-
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public RestError exception(Exception ex) {
-        return null;
-    }
+//    @ExceptionHandler(RuntimeException.class)
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)   // 400
+//    public Object runtimeException(RuntimeException e) {
+//
+//        //
+//        return null;
+//    }
+//
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public RestError exception(Exception ex) {
+//        return null;
+//    }
 }
