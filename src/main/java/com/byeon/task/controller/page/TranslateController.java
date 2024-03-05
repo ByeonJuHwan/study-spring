@@ -30,16 +30,6 @@ public class TranslateController {
     public String translatePage() {
         return "translate";
     }
-
-    @PostMapping("/translate/data")
-    @ResponseBody
-    public String translateResult(@RequestBody TranslateDto dto) {
-        log.info("dto = {}", dto);
-        // 별도의 서비스를 만들어서 call 할수있도록 해주세요.
-        // header 설정
-        ResponseEntity<String> response = translateService.callApiResult(dto);
-        return response.getBody();
-    }
 }
 
 
