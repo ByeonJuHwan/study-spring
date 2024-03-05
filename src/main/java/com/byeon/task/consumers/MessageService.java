@@ -1,29 +1,12 @@
 package com.byeon.task.consumers;
 
-import com.byeon.task.domain.entity.AccessLog;
-import com.byeon.task.domain.entity.Member;
 import com.byeon.task.dto.AccessLogMQDto;
-import com.byeon.task.dto.NoteCreateDto;
-import com.byeon.task.repository.AccessLogRepository;
-import com.byeon.task.repository.MemberRepository;
-import com.byeon.task.service.NoteService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.byeon.task.dto.TelegramDeadMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.security.Security;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * 저는 MessageService 와 AccessLogConsumer, VocalConsumer 를 따로 분리하는게 좋아 보입니다.
@@ -41,5 +24,14 @@ public class MessageService {
     public void sendMQAccessLog(AccessLogMQDto accessLog) {
         log.info("sendMQ = {}", accessLog);
         rabbitTemplate.convertAndSend(RabbitMQConfig.FANOUT_EXCHANGE, "", accessLog);
+    }
+
+    @Async
+    public void sendDeadMessageToTelegram(TelegramDeadMessageDto deadMessageDto) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.TELEGRAM_EXCHANGE, RabbitMQConfig.TELEGRAM_ROUTE_KEY, deadMessageDto);
+    }
+
+    public void sendDeadQueue(TelegramDeadMessageDto deadMessageDto) {
+        rabbitTemplate.convertAndSend(RabbitMQConfig.DEAD_EXCHANGE, RabbitMQConfig.DEAD_ROUTE_KEY, deadMessageDto);
     }
 }

@@ -27,9 +27,28 @@ public class RabbitMQConfig {
 //    @Value("${spring.rabbitmq.password}")
 //    private String rabbitmqPassword;
 
+    /**
+     * direct 설정
+     */
+    public static final String TELEGRAM_QUEUE = "telegram";
+    public static final String TELEGRAM_EXCHANGE = "telegram.exchange";
+    public static final String TELEGRAM_ROUTE_KEY = "telegram.route.key";
+
+    /**
+     * fan out 설정
+     */
+
     public static final String ACCESS_LOG_QUEUE = "access.log";
     public static final String VOCAL_QUEUE = "voca";
     public static final String FANOUT_EXCHANGE = "access.voca.exchange";
+
+    /**
+     * DeadQueue 설정
+     */
+
+    public static final String DEAD_QUEUE = "dead";
+    public static final String DEAD_EXCHANGE = "dead.exchange";
+    public static final String DEAD_ROUTE_KEY = "dead.key";
 
     /**
      * rabbitMQ 큐
@@ -44,6 +63,16 @@ public class RabbitMQConfig {
         return new Queue(VOCAL_QUEUE);
     }
 
+    @Bean
+    public Queue telegramQueue() {
+        return new Queue(TELEGRAM_QUEUE);
+    }
+
+    @Bean
+    public Queue deadQueue() {
+        return new Queue(DEAD_QUEUE);
+    }
+
     /**
      * rabbitMQ 익스체인지
      */
@@ -52,6 +81,15 @@ public class RabbitMQConfig {
     public DirectExchange exchange() {
         return new DirectExchange(exchangeName);
     }*/
+    @Bean
+    public DirectExchange telegramExchange() {
+        return new DirectExchange(TELEGRAM_EXCHANGE);
+    }
+
+    @Bean
+    public DirectExchange deadExchange() {
+        return new DirectExchange(DEAD_EXCHANGE);
+    }
 
     @Bean
     public FanoutExchange fanoutExchange() {
@@ -76,6 +114,15 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(vocalQueue).to(fanoutExchange);
     }
 
+    @Bean
+    public Binding bindingTelegram(Queue telegramQueue,DirectExchange telegramExchange) {
+        return BindingBuilder.bind(telegramQueue).to(telegramExchange).with(TELEGRAM_ROUTE_KEY);
+    }
+
+    @Bean
+    public Binding bindingDeadQueue(Queue deadQueue, DirectExchange deadExchange) {
+        return BindingBuilder.bind(deadQueue).to(deadExchange).with(DEAD_ROUTE_KEY);
+    }
     /**
      * rabbitMQ 템플릿 설정 dto 직렬화 역직렬화
      */

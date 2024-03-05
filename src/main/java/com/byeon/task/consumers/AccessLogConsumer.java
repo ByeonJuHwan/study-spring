@@ -2,15 +2,18 @@ package com.byeon.task.consumers;
 
 import com.byeon.task.domain.entity.AccessLog;
 import com.byeon.task.dto.AccessLogMQDto;
+import com.byeon.task.dto.TelegramDeadMessageDto;
 import com.byeon.task.repository.AccessLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
+@Component
 @RequiredArgsConstructor
 public class AccessLogConsumer {
 
     private final AccessLogRepository accessLogRepository;
+    private final MessageService messageService;
 
     // fixme 네 여기서는 메시지를 1개만 받고 여기에서 바로 엑세스로그를 저장해야합니다. 물론 던지는 쪽에서도 1개씩만 전달하게 되겠지요.
     // fixme 여기에서 예를 들어 10개씩 모아서 저장할 수도 있겠지요. 우선 하나씩 저장하는것은 맞습니다.
@@ -19,6 +22,8 @@ public class AccessLogConsumer {
     public void receiveMessage(AccessLogMQDto accessLog) {
         try {
             accessLogRepository.save(createAccessLog(accessLog));
+            // 거의 ExceptionHandler 에서 잡힌다
+            //throw new Exception("예외처리");
         } catch (Exception e) {
             // todo 네, 아래 전략중에 하나로도 해보시는게 좋을 것 같네요.
             // dead queue 로 ... or 아니면 다른 전략이 필요.
@@ -26,7 +31,17 @@ public class AccessLogConsumer {
             // Telegram 보내는 컨슈머한테 보내달라고 한다. (MSA)
             //   - HTTP X
             //   - MQ 로 연결. (비동기연결)
+            // Telegram 으로 보내기 선택
+            messageService.sendDeadMessageToTelegram(createDeadMessageDto(accessLog,e));
         }
+    }
+
+    private TelegramDeadMessageDto createDeadMessageDto(AccessLogMQDto accessLog, Exception e) {
+        return TelegramDeadMessageDto.builder()
+                .requestMethod(accessLog.getRequestMethod())
+                .uri(accessLog.getUri())
+                .errorMessage(e.getMessage())
+                .build();
     }
 
     private AccessLog createAccessLog(AccessLogMQDto accessLogMQDto) {
