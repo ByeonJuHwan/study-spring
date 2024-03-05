@@ -6,6 +6,7 @@ import com.byeon.task.dto.AccessLogMQDto;
 import com.byeon.task.repository.AccessLogRepository;
 import com.byeon.task.repository.ConfigRepository;
 import com.byeon.task.consumers.MessageService;
+import com.byeon.task.service.ConfigService;
 import com.byeon.task.service.TelegramService;
 import com.byeon.task.service.threadlocal.ThreadLocalSaveUserID;
 import jakarta.servlet.*;
@@ -31,7 +32,7 @@ public class AccessLogFilter implements Filter {
     private final ThreadLocalSaveUserID threadLocalSaveUserID;
     private final TelegramService telegramService;
     private final MessageService messageService;
-    private final ConfigRepository configRepository;
+    private final ConfigService configService;
 
     private final CommonMessage messageSource;
 
@@ -98,24 +99,24 @@ public class AccessLogFilter implements Filter {
      *    : HA: 클러스터링 고려하거나 샤딩하거냐, 둘다 하거나
      */
     public void isTimeOut(double elapseTime, String uri) {
-        // fixme 10 이면 10초가 아닌것 같습니다 :) 업데이트 필요합니다.
+        //  10 이면 10초가 아닌것 같습니다 :) 업데이트 필요합니다.
         // todo 이런 값처럼 처음에 000 인줄알았다가 runtime 값을 변경하게 되는 경우가 있을텐데요. 굳이 배포하지 않고 어떻게 하면 쉽게 변경할 수 있을까요? 한번 생각해보시고 실행해보시면 좋을 것 같아요.
         // DB 에 저장되어 있는 Timeout 시간 조회 -> sql 로 직접 넣기
 
         // todo ConfigService 를 만들고요. 거기에서 @Cacheable 을 활용해봤으면 합니다. 기본적으로 인메모리 구조로 세팅해보시고 한번 시도해보시죠..
-//        Config config = configRepository.findConfigByConfigName("confElapseTime").orElseThrow(() -> new RuntimeException("설정값이 없습니다."));
-//        log.info("config = {}", config);
-//        double confElapseTime = Double.parseDouble(config.getConfigValue());
+        String confValue = configService.getConfElapseTime("confElapseTime");
+        log.info("confValue = {}", confValue);
+        double confElapseTime = Double.parseDouble(confValue);
+        log.info("confElapseTime = {}", confElapseTime);
 
         // messages.properties 값에 의해 변경,
-        // todo messageSource 를 한번더 wrapping 하여 클래스를 만들어 사용하는게 어떨까요 ? 파라미터에 null, Local.getDefault() 를 넣는것보다는 좀더 낫지 않을까 해서요. getTimeoutForElapsedTime() 이정도로 하면 좋지 않을까 싶네요.
-        String confElapseTimeStr = messageSource.getTimeoutForElapsedTime();
-        double confElapseTime = Double.parseDouble(confElapseTimeStr);
-        log.info("confElapseTime = {}", confElapseTime);
+        //  messageSource 를 한번더 wrapping 하여 클래스를 만들어 사용하는게 어떨까요 ? 파라미터에 null, Local.getDefault() 를 넣는것보다는 좀더 낫지 않을까 해서요. getTimeoutForElapsedTime() 이정도로 하면 좋지 않을까 싶네요.
+//        String confElapseTimeStr = messageSource.getTimeoutForElapsedTime();
+//        double confElapseTime = Double.parseDouble(confElapseTimeStr);x
         log.info("elapseTime = {}", elapseTime);
         if (elapseTime >= confElapseTime) {
 
-            // todo 좀더 구체적인 메시지가 있어야 되지 않을까 해요. 메시지만 보더라도 어떤 API 에서 문제가 발생했고 얼마나 걸렸는지를 알면 좋을 것 같습니다.
+            //  좀더 구체적인 메시지가 있어야 되지 않을까 해요. 메시지만 보더라도 어떤 API 에서 문제가 발생했고 얼마나 걸렸는지를 알면 좋을 것 같습니다.
             telegramService.sendMessage(HttpStatus.REQUEST_TIMEOUT, System.lineSeparator() + "uri : " + uri + System.lineSeparator() + "걸린시간 : " + elapseTime + " 초" + System.lineSeparator() + "해당 로직 수정이 필요합니다!");
         }
     }
