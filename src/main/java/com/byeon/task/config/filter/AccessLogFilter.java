@@ -104,7 +104,7 @@ public class AccessLogFilter implements Filter {
         // DB 에 저장되어 있는 Timeout 시간 조회 -> sql 로 직접 넣기
 
         // todo ConfigService 를 만들고요. 거기에서 @Cacheable 을 활용해봤으면 합니다. 기본적으로 인메모리 구조로 세팅해보시고 한번 시도해보시죠..
-        String confValue = configService.getConfElapseTime("confElapseTime");
+        String confValue = configService.getConfElapseTimeWithRedis("confElapseTime");
         log.info("confValue = {}", confValue);
         double confElapseTime = Double.parseDouble(confValue);
         log.info("confElapseTime = {}", confElapseTime);
