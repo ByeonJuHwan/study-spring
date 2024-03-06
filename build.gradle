@@ -54,6 +54,9 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
 
+	// Redis 의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 tasks.named('test') {
