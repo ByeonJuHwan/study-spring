@@ -124,8 +124,7 @@ public class AccessLogFilter implements Filter {
     //  여기 메소드 이름에 Cashing 이 들어가 있는게 조금 이해가 안되네요. 앞으로 다루게 될 캐시와 오버랩 되면서 햇갈릴 것 같아서 리네이밍을 해주시면 좋을것같습니다.
     private static String getResponse(ContentCachingResponseWrapper wrapperResponse) {
         byte[] contentResponseAsArray = wrapperResponse.getContentAsByteArray();
-        String cashingResponse = new String(contentResponseAsArray, StandardCharsets.UTF_8);
-        return cashingResponse;
+        return new String(contentResponseAsArray, StandardCharsets.UTF_8);
     }
 
     // 여기 메소드 이름에 Cashing 이 들어가 있는게 조금 이해가 안되네요. 앞으로 다루게 될 캐시와 오버랩 되면서 햇갈릴 것 같아서 리네이밍을 해주시면 좋을것같습니다.
