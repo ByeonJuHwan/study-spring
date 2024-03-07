@@ -1,11 +1,14 @@
 package com.byeon.task.service;
 
+import com.byeon.task.common.RestResult;
 import com.byeon.task.domain.entity.Member;
 import com.byeon.task.dto.MemberJoinDto;
+import com.byeon.task.dto.MemberRedisDto;
 import com.byeon.task.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +32,11 @@ public class MemberService {
 
     public List<Member> getAll() {
         return memberRepository.findAll();
+    }
+
+
+    @Cacheable(value = "userProfile", key = "#userId")
+    public RestResult getUserProfile(String userId) {
+        return new RestResult(new MemberRedisDto(userId, 20));
     }
 }
