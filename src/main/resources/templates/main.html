@@ -6,29 +6,30 @@
     <title>번역기 홈페이지</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        /* 기존 CSS 스타일 유지 */
         body, html {
             height: 100%;
             margin: 0;
         }
         .bg-full {
-            min-height: 100%; /* Full height */
+            min-height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 15px;
         }
         .footer-custom {
-            background-color: #222; /* 푸터 배경색 변경 */
-            color: #ddd; /* 푸터 글씨색 변경 */
+            background-color: #222;
+            color: #ddd;
             text-align: center;
             position: fixed;
             bottom: 0;
             width: 100%;
-            height: 60px; /* 푸터 높이 */
-            line-height: 60px; /* 텍스트를 푸터 중앙에 위치시킴 */
+            height: 60px;
+            line-height: 60px;
         }
         .navbar-custom {
-            background-color: #555; /* 헤더 배경색 변경 */
+            background-color: #555;
             color: #fff;
         }
         .navbar-custom .navbar-brand,
@@ -36,12 +37,20 @@
             color: #fff;
         }
         .centered-form {
-            min-width: 300px; /* Set a minimum width for the form */
+            min-width: 300px;
         }
         .nav-item {
-            margin-right: 20px; /* 오른쪽 마진 추가 */
-            /* 또는 */
-            padding-right: 20px; /* 오른쪽 패딩 추가 */
+            margin-right: 20px;
+        }
+        /* 추가적인 스타일 */
+        .ranking-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .ranking-list {
+            font-size: 16px; /* 모바일 환경에 맞게 폰트 사이즈 조정 */
         }
     </style>
 </head>
@@ -76,6 +85,21 @@
     </div>
 </nav>
 
+
+<div class="container mt-5">
+    <div class="ranking-title">오늘의 일본어 탑 5</div>
+    <div class="list-group ranking-list">
+        <th:block th:each="ranking : ${ranking}">
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1"><span th:text="${ranking.sendMessage}"></span></h5>
+                    <small>번역: <span th:text="${ranking.translateMessage}"></span></small>
+                </div>
+            </a>
+        </th:block>
+    </div>
+</div>
+
 <div class="bg-full">
     <div class="centered-form text-center">
         <th:block sec:authorize="isAuthenticated()">
@@ -96,7 +120,7 @@
 </div>
 
 <footer class="footer-custom">
-    &copy; 2024 번역기 서비스. 모든 권리 보유.
+    번역기 프로그램
 </footer>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

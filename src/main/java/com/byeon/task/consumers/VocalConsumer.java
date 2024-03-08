@@ -5,6 +5,7 @@ import com.byeon.task.dto.AccessLogMQDto;
 import com.byeon.task.dto.NoteCreateDto;
 import com.byeon.task.repository.MemberRepository;
 import com.byeon.task.service.NoteService;
+import com.byeon.task.service.RankingService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,7 @@ public class VocalConsumer {
 
     private final NoteService noteService;
     private final MemberRepository memberRepository;
+    private final RankingService rankingService;
     @Transactional
     @RabbitListener(queues = RabbitMQConfig.VOCAL_QUEUE, concurrency = "1", containerFactory = "rabbitListenerContainerFactory")
     public void insertVocNote(AccessLogMQDto accessLog) {
@@ -37,6 +39,9 @@ public class VocalConsumer {
                 // 계속 member 를 검색하는 로직이 돔 -> 로그인 정보를 어디 보관하고 가져다 쓰면 좋을거같음
                 Member member = memberRepository.findMemberByUserId(accessLog.getUserId()).orElseThrow(() -> new RuntimeException("임시"));
                 noteService.saveVocalNote(noteCreateDto,member);
+
+                // redis ranking
+                rankingService.saveRanking(noteCreateDto);
             }
         } catch (Exception e) {
             log.info(e.getMessage());
