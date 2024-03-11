@@ -1,6 +1,7 @@
 package com.byeon.task.controller.page;
 
 import com.byeon.task.dto.MemberJoinDto;
+import com.byeon.task.security.RecaptchaVerification;
 import com.byeon.task.service.front.MemberFrontService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class MemberController {
 
     private final MemberFrontService memberFrontService;
+    private final RecaptchaVerification recaptchaVerification;
 
     @GetMapping("/join")
     public String join(Model model) {
@@ -27,12 +29,20 @@ public class MemberController {
 
     @PostMapping("/join")
     public String join(@Validated @ModelAttribute("member") MemberJoinDto memberJoinDto, BindingResult bindingResult) {
+        log.info("memberJoinDto = {}", memberJoinDto);
+
+        final boolean verified = recaptchaVerification.verify(memberJoinDto.getRecaptcha());
+        if( ! verified ) {   // 리캡챠 실패
+            throw new RuntimeException("리캡챠 실패 !");
+        }
+
+        log.info("리캡챠 성공 !!");
+
         if (bindingResult.hasErrors()) {
             log.error("error = {}", bindingResult.getAllErrors());
             return "/join";
         }
 
-        log.info("memberJoinDto = {}", memberJoinDto);
         memberFrontService.join(memberJoinDto);
 
         return "redirect:/";

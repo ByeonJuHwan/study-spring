@@ -15,4 +15,7 @@ public class MemberJoinDto {
     @NotBlank
     @Length(min = 2, max = 13)
     private String password;
+
+    @NotBlank
+    private String recaptcha;
 }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>회원가입</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         .form-container {
             min-height: 100vh;
@@ -28,7 +29,7 @@
 <div class="container form-container">
     <div class="form-signup">
         <h2 class="text-center">회원가입</h2>
-        <form th:action="@{/join}" th:object="${member}" method="post" class="mt-4">
+        <form th:action="@{/join}" th:object="${member}" method="post" class="mt-4" onsubmit="getResponse(this)">
             <div class="form-group">
                 <label for="userId">아이디:</label>
                 <input type="text" class="form-control" id="userId" th:field="*{userId}" placeholder="아이디를 입력해 주세요" required>
@@ -41,8 +42,17 @@
             </div>
             <button type="submit" class="btn btn-primary btn-block">회원가입</button>
             <a href="/" class="btn btn-secondary btn-block mt-2">홈</a>
+            <input type="hidden" id="recaptcha" name="recaptcha">
+            <div class="g-recaptcha" data-sitekey="6LdNqJQpAAAAANzsjdsUsgjl6Zwmq5eFiCkAeApr"></div>
         </form>
     </div>
 </div>
+<script>
+  function getResponse(form) {
+    const recaptchaResponse = grecaptcha.getResponse();
+    document.getElementById("recaptcha").value = recaptchaResponse;
+    form.submit();
+  }
+</script>
 </body>
 </html>
